@@ -16,7 +16,10 @@ const myLogger = (req, res, next) => {
 
 // express static middleware
 // ekstra fonk yazdırma, statik dosya çağırma, objelerle işlem yapma
+// MIDDLEWARES
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(myLogger);
 // ROUTES
@@ -32,6 +35,12 @@ app.get('/about', (req, res) => {
 
 app.get('/add', (req, res) => {
   res.render('add');
+});
+
+app.post('/photos', (req, res) => {
+  console.log('req', req.body);
+  // res.render('add');
+  res.redirect("/")
 });
 
 const port = 4000;
