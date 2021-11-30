@@ -1,8 +1,17 @@
 const express = require('express');
-const path = require('path');
+const mongoose = require('mongoose');
 const ejs = require('ejs');
+const path = require('path');
+
+const Photo = require('./models/Photo');
 
 const app = express();
+
+// connect DB
+mongoose.connect('mongodb://localhost/pcat-test-db', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 // önceden tanımlı konfigürsayon değişkeneklri kullanımı için
 //TEMPLATE ENGINE
@@ -23,10 +32,12 @@ app.use(express.json());
 
 app.use(myLogger);
 // ROUTES
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   // res.send('hello world'); // middleware
   // res.sendFile(path.resolve(__dirname, 'temp/index.html'));
-  res.render('index');
+
+  const photos = await Photo.find({});
+  res.render('index', { photos });
 });
 
 app.get('/about', (req, res) => {
@@ -37,10 +48,11 @@ app.get('/add', (req, res) => {
   res.render('add');
 });
 
-app.post('/photos', (req, res) => {
+app.post('/photos', async (req, res) => {
   console.log('req', req.body);
+  await Photo.create(req.body);
   // res.render('add');
-  res.redirect("/")
+  res.redirect('/');
 });
 
 const port = 4000;
