@@ -5,8 +5,20 @@ exports.getAllPhotos = async (req, res) => {
   // res.send('hello world'); // middleware
   // res.sendFile(path.resolve(__dirname, 'temp/index.html'));
 
-  const photos = await Photo.find({}).sort('-dateCreated');
-  res.render('index', { photos });
+  const page = req.query.page || 1;
+  const photosPerPage = 2;
+  const totalPhotos = await Photo.find().countDocuments();
+
+  const photos = await Photo.find({})
+    .sort('-dateCreated')
+    .skip((page - 1) * photosPerPage)
+    .limit(photosPerPage);
+
+  res.render('index', {
+    photos,
+    current: page,
+    pages: Math.ceil(totalPhotos / photosPerPage),
+  });
 };
 
 exports.getPhoto = async (req, res) => {
